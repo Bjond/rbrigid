@@ -1,4 +1,4 @@
-![alt text](https://github.com/Bjond/rbrigid/blob/develop/images/bjondhealthlogo-whitegrey.png "Bjönd Inc.")
+![alt text](https://github.com/Bjond/rbrigid/blob/master/images/bjondhealthlogo-whitegrey.png "Bjönd Inc.")
 
 rbrigid
 
