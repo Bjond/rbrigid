@@ -1,6 +1,6 @@
 ![alt text](https://github.com/Bjond/rbrigid/blob/master/images/bjondhealthlogo-whitegrey.png "Bjönd Inc.")
 
-rbrigid
+#*BRIGID*
 
 _Brigid is the Celtic god of knowledge and wisdom_
 
