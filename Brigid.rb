@@ -31,6 +31,7 @@
 #  @since Build 1.000
 #
 require 'pg'
+require 'csv'
 
 # Brigid class. Main entry point to this application
 class Brigid
@@ -106,6 +107,13 @@ class Brigid
   ensure
     rs.clear if rs
   end
+
+  def read_audit_log(audit_log, outfile)
+    f = File.new(outfile, 'w:UTF-8')
+    CSV.read(audit_log, encoding: 'UTF-8').each do |row|
+      f.puts row.inspect
+    end
+  end
 end
 
 brigid = Brigid.new
@@ -124,4 +132,5 @@ puts brigid.find_role_name_by_id('07c6790c-3277-466d-a448-9060d54531ae')
 puts brigid.find_group_name_by_id('4b6c668c-1e57-475d-8ae1-ee1e910d71c9')
 puts brigid.find_user_by_id('012afd5b-30f8-4a2d-80dc-ec68cdfc4eac')
 
+brigid.read_audit_log('secure-audit.log', 'outfile.log')
 brigid.close

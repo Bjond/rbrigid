@@ -37,4 +37,4 @@ build/
 **/*.*~
 TAGS
 TAGS~
-
+*.log
