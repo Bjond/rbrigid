@@ -13,6 +13,7 @@
 #
 #  sudo gem install pg  # install GEM interface to libpg
 #
+#  See the README for usage.
 #
 #  Copyright (c) 2016
 #  by Bjönd Health, Inc., Boston, MA
