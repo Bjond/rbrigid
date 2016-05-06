@@ -10,7 +10,7 @@
 #
 #  The short version is here:
 #  sudo apt-get install libpq-dev # install postgresql development shared lib
-#  
+#
 #  sudo gem install pg  # install GEM interface to libpg
 #
 #
@@ -92,7 +92,7 @@ class Brigid
 
   def find_user_by_id(id)
     values = find_by_template('findUserByID', id)
-    values.join('|') if values
+    values.join(',') if values
   end
 
   def close
@@ -110,8 +110,98 @@ class Brigid
 
   def read_audit_log(audit_log, outfile)
     f = File.new(outfile, 'w:UTF-8')
-    CSV.read(audit_log, encoding: 'UTF-8').each do |row|
-      f.puts row.inspect
+    CSV.foreach(audit_log,
+                col_sep:  '|',
+                headers:  false
+               ) do |row|
+      #f.puts row
+      process_row(row, f)
+    end
+  end
+
+  def process_row(row, file)
+    row.each do |element|
+      next unless element
+      tuple = element.split '='
+      tuple[0].strip! if tuple[0]
+      tuple[1].delete! "'" if tuple[1]
+      line = "%s='%s'|" % [tuple[0], resolve(tuple[0], tuple[1])]
+      file.print line
+    end
+    file.puts
+  end
+
+  def resolve(key, value)
+    case key
+    when 'ASSIGNED_TO'
+    when 'ASSIGNOR'
+    when 'ALREADYLOGGEDIN'
+    when 'LOCKEDACCOUNT'
+    when 'AUTHORIZATIONFAILURE'
+    when 'LIMITEDIDENTITYCREATED'
+    when 'ACCOUNTLOCKEDFORLOGIN'
+    when 'ACCOUNTUNLOCKEDFORLOGIN'
+    when 'PASSWORDVALIDATIONFAILUREFORLOGIN'
+    when 'CLEAREDPASSWORDATTEMPTCOUNTERFORLOGIN'
+    when 'IDENTITYCREATED'
+    when 'IDENTITYDELETED'
+    when 'LOGIN'
+    when 'LOGOUT'
+    when 'IDENTITY'
+    when 'USER'
+      find_user_by_id value
+
+    when 'TASKSTATETRANSITIONTENANT'
+    when 'TENANT'
+    when 'GROUP'
+    when 'GROUPCREATED'
+    when 'GROUPDELETED'
+    when 'GROUPROLEADDED'
+    when 'GROUPROLEREVOKED'
+    when 'DEFAULTTENANTDIVISIONCHANGEDGROUPID'
+      find_group_name_by_id value
+
+    when 'ROLECREATED'
+    when 'ROLEDELETED'
+    when 'ROLEGRANTED'
+    when 'ROLEREVOKED'
+    when 'ROLEUPDATED'
+      find_role_name_by_id value
+
+    when 'CREATERECORDLOGIN'
+    when 'READ/VIEWRECORDLOGIN'
+    when 'UPDATERECORDLOGIN'
+    when 'DELETERECORDLOGIN'
+      @last_record_id = value
+      value
+    when 'CLASS'
+      resolveClass value, @last_record_id
+    else
+      value
+    end
+  end
+
+  def resolve_class(clazz, id)
+    case clazz
+    when 'com.bjond.persistence.assessment.Assessment'
+      'Assessment: ' + find_assessment_name_by_id(id)
+    when 'com.bjond.persistence.task.BjondTask'
+      'BjondTask: ' + find_bjond_task_by_id(id)
+    when 'com.bjond.persistence.permissions.UserDefinedRole'
+      'UserDefinedRole: ' + find_user_defined_role_name_by_id(id)
+    when 'com.bjond.persistence.person.PersonPerson'
+      'Person: ' + find_person_name_by_id(id)
+    when 'com.bjond.persistence.rule.RuleDefinition'
+      'RuleDefinition: ' + find_rule_definition_name_by_id(id)
+    when 'com.bjond.persistence.tags.TagsFullText'
+      'Tag: ' + find_tag_name_by_id(id)
+    else
+      # Handles all questions identically.
+      if clazz.start_with? 'com.bjond.persistence.assessment.Question'
+        clazz + ': ' + find_question_name_by_id(id)
+      else
+        id
+      end
     end
   end
 end
