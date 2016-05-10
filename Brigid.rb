@@ -110,12 +110,10 @@ class Brigid
   end
 
   def read_audit_log(audit_log, outfile)
-    f = File.new(outfile, 'w:UTF-8')
-    CSV.foreach(audit_log,
-                col_sep:  '|',
-                headers:  false
-               ) do |row|
-      process_row(row, f)
+    File.open(outfile, 'w:UTF-8') do |f|
+      CSV.foreach(audit_log, col_sep:  '|', headers: false) do |row|
+        process_row(row, f)
+      end
     end
   end
 
@@ -126,7 +124,7 @@ class Brigid
       tuple = element.split '='
       tuple[0].strip! if tuple[0]
       tuple[1].delete! "'" if tuple[1]
-      line = "%s='%s'|" % [tuple[0], resolve(tuple[0], tuple[1])]
+      line = format "%s='%s'", tuple[0], resolve(tuple[0], tuple[1])
       file.print line
     end
     file.puts
