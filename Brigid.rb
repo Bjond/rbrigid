@@ -36,8 +36,8 @@ require 'csv'
 
 # Brigid class. Main entry point to this application
 class Brigid
-  def initialize
-    @con = PG.connect host: 'localhost', port: 5432, dbname: 'bjond-health', user: 'bjondadmin', password: 'bjondadmin'
+  def initialize(host, port, dbname, user, password)
+    @con = PG.connect host: host, port: port, dbname: dbname, user: user, password: password
     @con.prepare 'findTagNameByID', 'SELECT p.name FROM tags_fulltext p WHERE p.id =$1'
     @con.prepare 'findQuestionNameByID', 'SELECT p.name FROM assessment_questions p WHERE p.id = $1'
     @con.prepare 'findRuleDefinitionNameByID', 'SELECT p.name FROM rule_definition p WHERE p.id = $1'
@@ -208,7 +208,13 @@ class Brigid
   end
 end
 
-# brigid = Brigid.new
+#brigid = Brigid.new 'localhost', 5432, 'bjond-health', 'bjondadmin', 'bjondadmin'
+#brigid = Brigid.new ENV['POSTGRESQL_SERVER'],
+#                    ENV['OPENSHIFT_POSTGRESQL_DB_PORT'],
+#                    ENV['OPENSHIFT_APP_NAME'],
+#                    ENV['ADAPTER_POSTGRESQL_DB_USERNAME'],
+#                    ENV['ADAPTER_POSTGRESQL_DB_PASSWORD']
+
 # puts brigid.version_of_libprg
 # puts brigid.find_tag_name_by_id('0c51e93c-3a1f-11e5-b6bd-129ad806adaf')
 # puts brigid.find_tag_name_by_id('0c51e93c-3a1f-11e5-b6bd-129ad806ada').nil?
@@ -224,5 +230,5 @@ end
 # puts brigid.find_group_name_by_id('4b6c668c-1e57-475d-8ae1-ee1e910d71c9')
 # puts brigid.find_user_by_id('012afd5b-30f8-4a2d-80dc-ec68cdfc4eac')
 
-# brigid.read_audit_log('secure-audit.log', 'outfile.log')
-# brigid.close
+#brigid.read_audit_log('secure-audit.log', 'outfile.log')
+#brigid.close
