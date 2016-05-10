@@ -124,7 +124,7 @@ class Brigid
       tuple = element.split '='
       tuple[0].strip! if tuple[0]
       tuple[1].delete! "'" if tuple[1]
-      line = format "%s='%s'", tuple[0], resolve(tuple[0], tuple[1])
+      line = format "%s='%s'|", tuple[0], resolve(tuple[0], tuple[1])
       file.print line
     end
     file.puts
@@ -184,21 +184,21 @@ class Brigid
   def resolve_class(clazz, id)
     case clazz
     when 'com.bjond.persistence.assessment.Assessment'
-      'Assessment: %s' % find_assessment_name_by_id(id)
+      format 'Assessment: %s', find_assessment_name_by_id(id)
     when 'com.bjond.persistence.task.BjondTask'
-      'BjondTask: %s' % find_bjond_task_by_id(id)
+      format 'BjondTask: %s', find_bjond_task_by_id(id)
     when 'com.bjond.persistence.permissions.UserDefinedRole'
-      'UserDefinedRole: %s' % find_user_defined_role_name_by_id(id)
+      format 'UserDefinedRole: %s', find_user_defined_role_name_by_id(id)
     when 'com.bjond.persistence.person.PersonPerson'
-      'Person: %s' % find_person_name_by_id(id)
+      format 'Person: %s', find_person_name_by_id(id)
     when 'com.bjond.persistence.rule.RuleDefinition'
-      'RuleDefinition: %s' % find_rule_definition_name_by_id(id)
+      format 'RuleDefinition: %s', find_rule_definition_name_by_id(id)
     when 'com.bjond.persistence.tags.TagsFullText'
-      'Tag: %s' % find_tag_name_by_id(id)
+      format 'Tag: %s', find_tag_name_by_id(id)
     else
       # Handles all questions identically.
       if clazz.start_with? 'com.bjond.persistence.assessment.Question'
-        '%s: %s' % [clazz, find_question_name_by_id(id)]
+        format '%s: %s', clazz, find_question_name_by_id(id)
       else
         id
       end
